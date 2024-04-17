@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: front-end
+  namespace: app-2048
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"  
+    nginx.ingress.kubernetes.io/ssl-certificate: "app-2048/sock-shop-tls"
+    external-dns.alpha.kubernetes.io/hostname: sock-shop.891377135844.cloud.bayer.com
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: sock-shop.891377135844.cloud.bayer.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: front-end
+            port:
+              number: 80
+  tls:
+    - hosts:
+      - sock-shop.891377135844.cloud.bayer.com
+      secretName: sock-shop-tls
