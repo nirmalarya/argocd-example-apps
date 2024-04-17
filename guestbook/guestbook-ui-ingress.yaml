@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: guestbook-ui
+  namespace: app-2048
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"  
+    nginx.ingress.kubernetes.io/ssl-certificate: "app-2048/guestbook-ui-tls"
+    external-dns.alpha.kubernetes.io/hostname: guestbook-ui.891377135844.cloud.bayer.com
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: guestbook-ui.891377135844.cloud.bayer.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: guestbook-ui
+            port:
+              number: 80
+  tls:
+    - hosts:
+      - guestbook-ui.891377135844.cloud.bayer.com
+      secretName: guestbook-ui-tls
